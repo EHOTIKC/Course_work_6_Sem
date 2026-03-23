@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="../ExperimentRunner/ExperimentRunner.csproj" />
+  <Project Path="Course_work_6_Sem.csproj" />
+</Solution>
