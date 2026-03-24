@@ -43,12 +43,20 @@ namespace ExperimentRunner
                 Stopwatch swSeq = Stopwatch.StartNew();
                 MergeSorter.Sort(seqArray);
                 swSeq.Stop();
+
+                if (!IsSorted(seqArray))
+                    Console.WriteLine("[ERROR] Sequential sort result is incorrect!");
+
                 seqTimes.Add(swSeq.ElapsedMilliseconds);
                 Console.WriteLine($"Sequential Time: {swSeq.ElapsedMilliseconds} ms");
 
                 Stopwatch swPar = Stopwatch.StartNew();
                 ParallelMergeSorter.Sort(parArray);
                 swPar.Stop();
+
+                if (!IsSorted(parArray))
+                    Console.WriteLine("[ERROR] Parallel sort result is incorrect!");
+
                 parTimes.Add(swPar.ElapsedMilliseconds);
                 Console.WriteLine($"Parallel Time:   {swPar.ElapsedMilliseconds} ms");
 
@@ -63,6 +71,9 @@ namespace ExperimentRunner
             double avgParTime = parTimes.Average();
             double avgSpeedup = avgSeqTime / avgParTime;
 
+            int logicalCores = Environment.ProcessorCount;
+            double efficiency = avgSpeedup / logicalCores;
+
             Console.WriteLine("========================================");
             Console.WriteLine("           EXPERIMENT RESULTS           ");
             Console.WriteLine("========================================");
@@ -72,6 +83,8 @@ namespace ExperimentRunner
             Console.WriteLine($"Avg Par Time:    {avgParTime:F2} ms");
             Console.WriteLine("----------------------------------------");
             Console.WriteLine($"AVERAGE SPEEDUP: {avgSpeedup:F2}x");
+            Console.WriteLine($"Logical Cores:   {logicalCores}");
+            Console.WriteLine($"EFFICIENCY:      {efficiency:F4} ( {efficiency * 100:F2}%)");
             Console.WriteLine("========================================");
 
             Console.WriteLine("\nPress any key to exit...");
@@ -124,6 +137,16 @@ namespace ExperimentRunner
                 array[i] = new Product(i, name, price);
             }
             return array;
+        }
+
+        static bool IsSorted(Product[] array)
+        {
+            for (int i = 0; i < array.Length - 1; i++)
+            {
+                if (array[i].CompareTo(array[i + 1]) > 0)
+                    return false;
+            }
+            return true;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 
 namespace Course_work_6_Sem
 {
@@ -22,7 +23,7 @@ namespace Course_work_6_Sem
                 Console.WriteLine("Select sorting method:");
                 Console.WriteLine("1 - Sequential Sort");
                 Console.WriteLine("2 - Parallel Sort");
-                Console.WriteLine("3 - Benchmark Both (Compare for Coursework)");
+                Console.WriteLine("3 - Benchmark Both");
                 Console.Write("Your choice: ");
 
                 string choice = Console.ReadLine();
@@ -79,7 +80,16 @@ namespace Course_work_6_Sem
             bool isSorted = IsSorted(array);
 
             Console.WriteLine($"Status: {(isSorted ? "SUCCESS" : "FAILED")}");
-            Console.WriteLine($"Elapsed time: {time} ms\n");
+            Console.WriteLine($"Elapsed time: {time} ms");
+
+            if (isSorted)
+            {
+                SaveArrayToFile(name, array);
+            }
+            else
+            {
+                Console.WriteLine($"[WARNING] Array is not sorted, skipping file save.\n");
+            }
 
             return time;
         }
@@ -106,6 +116,56 @@ namespace Course_work_6_Sem
                     return false;
             }
             return true;
+        }
+
+        static void SaveArrayToFile(string algorithmName, Product[] array)
+        {
+            string fileName = $"{algorithmName}_Result.txt";
+
+            Console.WriteLine($"[INFO] Saving results to {fileName}...");
+
+            try
+            {
+                using (StreamWriter writer = new StreamWriter(fileName))
+                {
+                    writer.WriteLine($"--- Sorting Results for {algorithmName} ---");
+                    writer.WriteLine($"Total Elements: {array.Length:N0}");
+                    writer.WriteLine("------------------------------------------");
+
+                    int maxElementsToSave = 1000;
+
+                    if (array.Length <= maxElementsToSave)
+                    {
+                        for (int i = 0; i < array.Length; i++)
+                        {
+                            writer.WriteLine($"[{i}] {array[i].ToString()}");
+                        }
+                    }
+                    else
+                    {
+                        int half = maxElementsToSave / 2;
+
+                        writer.WriteLine("... Showing First 500 Elements ...");
+                        for (int i = 0; i < half; i++)
+                        {
+                            writer.WriteLine($"[{i}] {array[i].ToString()}");
+                        }
+
+                        writer.WriteLine("\n... [SKIPPED MILLIONS OF ELEMENTS] ...\n");
+
+                        writer.WriteLine("... Showing Last 500 Elements ...");
+                        for (int i = array.Length - half; i < array.Length; i++)
+                        {
+                            writer.WriteLine($"[{i}] {array[i].ToString()}");
+                        }
+                    }
+                }
+                Console.WriteLine($"[INFO] Saved successfully.\n");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ERROR] Failed to save file: {ex.Message}\n");
+            }
         }
     }
 }
