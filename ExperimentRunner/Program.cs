@@ -33,12 +33,14 @@ namespace ExperimentRunner
             List<long> seqTimes = new List<long>();
             List<long> parTimes = new List<long>();
 
+
             for (int i = 1; i <= runs; i++)
             {
                 Console.WriteLine($"--- Run {i} of {runs} ---");
 
                 Product[] seqArray = (Product[])baseArray.Clone();
                 Product[] parArray = (Product[])baseArray.Clone();
+                Product[] builtInArray = (Product[])baseArray.Clone();
 
                 Stopwatch swSeq = Stopwatch.StartNew();
                 MergeSorter.Sort(seqArray);
@@ -59,6 +61,11 @@ namespace ExperimentRunner
 
                 parTimes.Add(swPar.ElapsedMilliseconds);
                 Console.WriteLine($"Parallel Time:   {swPar.ElapsedMilliseconds} ms");
+
+                Stopwatch swBuiltIn = Stopwatch.StartNew();
+                Array.Sort(builtInArray);
+                swBuiltIn.Stop();
+                Console.WriteLine($"Array.Sort Time: {swBuiltIn.ElapsedMilliseconds} ms");
 
                 double currentSpeedup = (double)swSeq.ElapsedMilliseconds / swPar.ElapsedMilliseconds;
                 Console.WriteLine($"Current Speedup: {currentSpeedup:F2}x\n");
@@ -130,11 +137,22 @@ namespace ExperimentRunner
         {
             Product[] array = new Product[count];
             Random rand = new Random(42);
+
+            string[] manufacturers = { "TechCorp", "GigaByte", "MegaSystems", "NanoTech", "Quantum" };
+            string[] suppliers = { "GlobalDelivery", "FastLogistics", "PrimeShip", "EcoTransport" };
+            string[] countries = { "USA", "China", "Germany", "Japan", "Taiwan", "Ukraine" };
+
             for (int i = 0; i < count; i++)
             {
                 string name = $"Product_{i}";
                 double price = rand.NextDouble() * 10000;
-                array[i] = new Product(i, name, price);
+                string manufacturer = manufacturers[rand.Next(manufacturers.Length)];
+                string supplier = suppliers[rand.Next(suppliers.Length)];
+                string country = countries[rand.Next(countries.Length)];
+
+                DateTime productionDate = DateTime.Now.AddDays(-rand.Next(0, 1825));
+
+                array[i] = new Product(i, name, price, manufacturer, supplier, country, productionDate);
             }
             return array;
         }

@@ -99,11 +99,21 @@ namespace Course_work_6_Sem
             Product[] array = new Product[count];
             Random rand = new Random(42);
 
+            string[] manufacturers = { "TechCorp", "GigaByte", "MegaSystems", "NanoTech", "Quantum" };
+            string[] suppliers = { "GlobalDelivery", "FastLogistics", "PrimeShip", "EcoTransport" };
+            string[] countries = { "USA", "China", "Germany", "Japan", "Taiwan", "Ukraine" };
+
             for (int i = 0; i < count; i++)
             {
                 string name = $"Product_{i}";
                 double price = rand.NextDouble() * 10000;
-                array[i] = new Product(i, name, price);
+                string manufacturer = manufacturers[rand.Next(manufacturers.Length)];
+                string supplier = suppliers[rand.Next(suppliers.Length)];
+                string country = countries[rand.Next(countries.Length)];
+
+                DateTime productionDate = DateTime.Now.AddDays(-rand.Next(0, 1825));
+
+                array[i] = new Product(i, name, price, manufacturer, supplier, country, productionDate);
             }
             return array;
         }
